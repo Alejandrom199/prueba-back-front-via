@@ -1,0 +1,93 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("POSTGRES_URL")
+}
+
+// Models
+model Usuario {
+  idUsuario        Int      @id @default(autoincrement())
+  UserName         String   @db.VarChar(100) // Aumenté el límite a 100
+  Password         String   @db.VarChar(255) // Aumenté el límite a 255
+  Mail             String   @unique @db.VarChar(255) // Aumenté el límite a 255
+  SessionActive    String   @db.Char(1)
+  Status           String   @db.VarChar(20) @default("active")
+  failedAttempts   Int?     @default(0)
+
+  Persona_idPersona2 Int    // Clave foránea a Persona
+  persona          Persona  @relation(fields: [Persona_idPersona2], references: [idPersona])
+
+  roles            UsuarioRol[] // Relación muchos a muchos con Rol
+  sessions         Session[] // Relación uno a muchos con Session
+
+  @@map("usuarios")
+}
+// 
+model Rol {
+  idRol    Int      @id @default(autoincrement())
+  RolName  String   @db.VarChar(50)
+  usuarios UsuarioRol[] // Relación muchos a muchos con Usuario
+  opciones RolOpcionesRol[] // Relación muchos a muchos con RolOpciones
+
+  @@map("roles")
+}
+
+model RolOpciones {
+  idOpcion        Int      @id @default(autoincrement())
+  NombreOpciones  String   @db.VarChar(50)
+  roles           RolOpcionesRol[] // Relación muchos a muchos con Rol
+
+  @@map("rolOpciones")
+}
+
+model Persona {
+  idPersona       Int      @id @default(autoincrement())
+  Nombres         String   @db.VarChar(60)
+  Apellidos       String   @db.VarChar(60)
+  Identificacion  String   @db.VarChar(10)
+  FechaNacimiento DateTime @db.Date
+  usuarios        Usuario[] // Relación uno a muchos con Usuario
+
+  @@map("personas")
+}
+
+model Session {
+  idSession       Int      @id @default(autoincrement())
+  FechaIngreso    DateTime 
+  FechaCierre     DateTime?
+  
+  usuarios_idUsuario Int    // Clave foránea a Usuario
+  usuario         Usuario  @relation(fields: [usuarios_idUsuario], references: [idUsuario])
+
+  @@map("sessions")
+}
+
+// Tablas intermedias para relaciones muchos a muchos
+
+model UsuarioRol {
+  usuarioId Int    @map("usuario_id")
+  rolId     Int    @map("rol_id")
+  usuario   Usuario @relation(fields: [usuarioId], references: [idUsuario])
+  rol       Rol     @relation(fields: [rolId], references: [idRol])
+
+  @@id([usuarioId, rolId])
+  @@map("usuario_rol")
+}
+
+model RolOpcionesRol {
+  rolId        Int         @map("rol_id")
+  opcionId     Int         @map("opcion_id")
+  rol          Rol         @relation(fields: [rolId], references: [idRol])
+  opcion       RolOpciones @relation(fields: [opcionId], references: [idOpcion])
+
+  @@id([rolId, opcionId])
+  @@map("rol_opciones_rol")
+}
