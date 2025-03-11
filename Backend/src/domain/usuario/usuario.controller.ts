@@ -1,11 +1,14 @@
 import { Request, Response } from 'express';
 import { UsuarioService } from './usuario.service';
+import { SessionService } from '../session/session.service';
 
 export class UsuarioController {
   private usuarioService: UsuarioService;
+  private sessionServcice: SessionService;
 
   constructor() {
     this.usuarioService = new UsuarioService();
+    this.sessionServcice = new SessionService();
   }
 
   getUsuarios = async (req: Request, res: Response): Promise<void> => {
@@ -68,4 +71,20 @@ export class UsuarioController {
       res.status(500).json({ message: 'Error eliminando usuario' });
     }
   };
+
+  obtenerSesionesDelUsuario = async(req: Request, res: Response) => {
+    
+    const {idUsuario} = req.params
+
+    console.log(idUsuario)
+
+    try{
+      const sesiones = await this.sessionServcice.obtenerSesionesDelUsuario(Number(idUsuario))
+      res.json(sesiones)
+    }
+    catch(error){
+      res.status(500).json({message: 'Error al obtener las sessiones', error, idUsuario})
+    }
+    
+  }
 }

@@ -1,5 +1,4 @@
 import { Routes } from '@angular/router';
-import {AppComponent} from './app.component';
 import {LoginPageComponent} from './pages/login-page/login-page.component';
 import {BienvenidaPageComponent} from './pages/bienvenida-page/bienvenida-page.component';
 import {DashboardPageComponent} from './pages/dashboard-page/dashboard-page.component';

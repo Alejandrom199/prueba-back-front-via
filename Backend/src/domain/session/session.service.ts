@@ -59,7 +59,7 @@ export class SessionService {
     }
   }
 
-  // Eliminar un rol
+
   async deleteSession(sessionId: number) {
     try {
       await prisma.session.delete({
@@ -68,5 +68,23 @@ export class SessionService {
     } catch (error) {
       throw new Error("Error al eliminar sesión: " + error);
     }
+  }
+
+  async obtenerSesionesDelUsuario(usuarioId: number){
+    try{
+      const sesiones = await prisma.session.findMany({
+        where: {
+          usuarios_idUsuario: usuarioId
+        },
+        orderBy: {
+          FechaIngreso: 'desc'
+        }
+      })
+      return sesiones
+    }
+    catch(error){
+      throw new Error("Error al obtener sesiones del usuario, "+error)
+    }
+
   }
 }
