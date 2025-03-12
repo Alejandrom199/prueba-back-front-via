@@ -1,9 +1,10 @@
 import {Component, OnInit} from '@angular/core';
 import {Usuario} from '../../interfaces/Usuario';
+import {AdminPageComponent} from './admin-page/admin-page.component';
 
 @Component({
   selector: 'app-dashboard-page',
-  imports: [],
+  imports: [AdminPageComponent],
   templateUrl: './dashboard-page.component.html',
   standalone: true,
   styleUrl: './dashboard-page.component.css'

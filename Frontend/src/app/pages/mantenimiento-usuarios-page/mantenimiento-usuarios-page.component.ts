@@ -4,6 +4,7 @@ import { Component } from '@angular/core';
   selector: 'app-mantenimiento-usuarios-page',
   imports: [],
   templateUrl: './mantenimiento-usuarios-page.component.html',
+  standalone: true,
   styleUrl: './mantenimiento-usuarios-page.component.css'
 })
 export class MantenimientoUsuariosPageComponent {

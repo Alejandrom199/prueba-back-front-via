@@ -7,19 +7,37 @@ import bcrypt from 'bcrypt';
 export class UsuarioService {
 
   async getUsuarios() {
-    try{
-      const usuarios = await prisma.usuario.findMany();
-      return usuarios
-    }
-    catch(error){
-      throw error
+    try {
+      const usuarios = await prisma.usuario.findMany({
+        include: {
+          sessions: true,
+          roles: {
+            select: {
+              rolId: true
+            }
+          }
+        }
+      });
+  
+      return usuarios;
+    } catch (error) {
+      throw error;
     }
   }
+  
 
   async getUsuarioById(id: number) {
     try{
       const usuario = await prisma.usuario.findUnique({ 
-        where: { idUsuario: id } 
+        where: { idUsuario: id } ,
+        include: {
+          sessions: true,
+          roles: {
+            select: {
+              rolId: true
+            }
+          }
+        }
       });
       return usuario
     }
@@ -126,6 +144,24 @@ export class UsuarioService {
       throw error
     }
   }
+
+  async getUsuarioConUltimaSesion(idUsuario: number) {
+    try {
+      const usuario = await prisma.usuario.findUnique({
+        where: { idUsuario },
+        include: {
+          sessions: {
+            orderBy: { FechaIngreso: 'desc' },
+            take: 1
+          }
+        }
+      });
+      return usuario;
+    } catch (error) {
+      throw new Error('Error al obtener usuario con sesión: ' + error);
+    }
+  }
+  
 
   
 }

@@ -2,11 +2,14 @@ import {Component, inject, OnInit} from '@angular/core';
 import {UsuarioService} from '../../services/usuario.service';
 import {Usuario} from '../../interfaces/Usuario';
 import {Router} from '@angular/router';
+import {DatePipe} from '@angular/common';
 
 
 @Component({
   selector: 'app-bienvenida-page',
-  imports: [],
+  imports: [
+    DatePipe
+  ],
   templateUrl: './bienvenida-page.component.html',
   standalone: true,
   styleUrl: './bienvenida-page.component.css'

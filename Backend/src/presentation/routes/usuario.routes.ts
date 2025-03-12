@@ -9,6 +9,6 @@ usuarioRouter.get('/:id', usuarioController.getUsuarioById);
 usuarioRouter.post('/', usuarioController.createUsuario);
 usuarioRouter.put('/:id', usuarioController.updateUsuario);
 usuarioRouter.delete('/:id', usuarioController.deleteUsuario);
-usuarioRouter.get('/:id/sesiones', usuarioController.obtenerSesionesDelUsuario)
+usuarioRouter.get('/:id/sesiones', usuarioController.getUsuarioConSesion)
 
 export { usuarioRouter };

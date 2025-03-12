@@ -7,6 +7,7 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import {UsuarioLogin} from '../../interfaces/UsuarioLogin';
 import {AuthService} from '../../services/auth.service';
 import {Router} from '@angular/router';
+import {Usuario} from '../../interfaces/Usuario';
 
 @Component({
   selector: 'app-login-page',
@@ -15,7 +16,7 @@ import {Router} from '@angular/router';
   standalone: true,
 })
 export class LoginPageComponent implements OnInit{
-  usuarios: UsuarioLogin[] = []
+  usuarios: Usuario[] = []
   form!: FormGroup
 
   constructor(
@@ -35,7 +36,7 @@ export class LoginPageComponent implements OnInit{
   }
 
   obtenerUsuarios(){
-    this.usuarioService.obtenerUsuarios().subscribe((data: UsuarioLogin[]) => {
+    this.usuarioService.obtenerUsuarios().subscribe((data: Usuario[]) => {
       this.usuarios = data;
       console.log(this.usuarios)
     });

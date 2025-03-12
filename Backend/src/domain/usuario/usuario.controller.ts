@@ -4,11 +4,9 @@ import { SessionService } from '../session/session.service';
 
 export class UsuarioController {
   private usuarioService: UsuarioService;
-  private sessionServcice: SessionService;
 
   constructor() {
     this.usuarioService = new UsuarioService();
-    this.sessionServcice = new SessionService();
   }
 
   getUsuarios = async (req: Request, res: Response): Promise<void> => {
@@ -16,7 +14,7 @@ export class UsuarioController {
       const usuarios = await this.usuarioService.getUsuarios();
       res.json(usuarios); // Enviamos la respuesta
     } catch (error) {
-      res.status(500).json({ message: 'Error obteniendo usuarios' });
+      res.status(500).json({ message: 'Error obteniendo usuarios' , error});
     }
   };
 
@@ -72,19 +70,14 @@ export class UsuarioController {
     }
   };
 
-  obtenerSesionesDelUsuario = async(req: Request, res: Response) => {
-    
-    const {idUsuario} = req.params
-
-    console.log(idUsuario)
-
-    try{
-      const sesiones = await this.sessionServcice.obtenerSesionesDelUsuario(Number(idUsuario))
-      res.json(sesiones)
+  getUsuarioConSesion = async (req: Request, res: Response) => {
+    const id = parseInt(req.params.id);
+    try {
+      const usuario = await this.usuarioService.getUsuarioConUltimaSesion(id);
+      res.json(usuario);
+    } catch (error) {
+      res.status(500).json({ message: 'Error obteniendo usuario con sesión', error });
     }
-    catch(error){
-      res.status(500).json({message: 'Error al obtener las sessiones', error, idUsuario})
-    }
-    
-  }
+  };
+  
 }
