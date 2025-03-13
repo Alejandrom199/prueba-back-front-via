@@ -49,14 +49,21 @@ export class UsuarioController {
   
 
   updateUsuario = async (req: Request, res: Response): Promise<void> => {
-    const { userId, rolesIds, ...userData } = req.body; // Desestructuramos los rolesIds y demás datos del usuario
+    const userId = parseInt(req.params.id, 10)
+    const { rolesIds, ...userData } = req.body; // Desestructuramos los rolesIds y demás datos del usuario
+
+    if (isNaN(userId)) {
+      res.status(400).json({ message: 'ID de usuario inválido' });
+      return;
+    }
 
     try {
-      // Actualizamos el usuario y sus roles
       const updatedUser = await this.usuarioService.updateUsuario(userId, userData, rolesIds);
-      res.status(200).json(updatedUser); // Respondemos con el usuario actualizado
+      res.status(200).json(updatedUser);
     } catch (error) {
-      res.status(500).json({ message: 'Error actualizando usuario' });
+      if (error instanceof Error) {
+        res.status(500).json({ message: 'Error actualizando usuario', error: error.message });
+      }
     }
   };
 

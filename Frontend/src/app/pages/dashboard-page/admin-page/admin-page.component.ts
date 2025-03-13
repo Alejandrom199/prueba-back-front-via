@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
-import {Usuario} from '../../../interfaces/Usuario';
 import {UsuarioService} from '../../../services/usuario.service';
+import {UsuarioMostrar} from '../../../interfaces/UsuarioMostrar';
 
 @Component({
   selector: 'app-admin-page',
@@ -11,7 +11,7 @@ import {UsuarioService} from '../../../services/usuario.service';
 })
 export class AdminPageComponent implements OnInit{
 
-  usuarios?: Usuario[]
+  usuarios?: UsuarioMostrar[]
 
   usuariosActivos: number = 0;
   usuariosInactivos: number = 0;

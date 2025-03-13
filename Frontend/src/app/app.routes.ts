@@ -1,27 +1,24 @@
 import { Routes } from '@angular/router';
 import {LoginPageComponent} from './pages/login-page/login-page.component';
 import {BienvenidaPageComponent} from './pages/bienvenida-page/bienvenida-page.component';
-import {DashboardPageComponent} from './pages/dashboard-page/dashboard-page.component';
-import {
-  MantenimientoUsuariosPageComponent
-} from './pages/mantenimiento-usuarios-page/mantenimiento-usuarios-page.component';
+import {authLoginGuard} from './guards/auth-login.guard';
+import {authGuard} from './guards/auth.guard';
 
 export const routes: Routes = [
   {
     path: '',
     component: LoginPageComponent,
+    canActivate: [authLoginGuard]
   },
   {
-    path: 'index',
-    component: BienvenidaPageComponent,
+    path: 'bienvenida',
+    component: BienvenidaPageComponent
   },
   {
     path: 'dashboard',
-    component: DashboardPageComponent,
-  },
-  {
-    path: 'mantenimiento',
-    component: MantenimientoUsuariosPageComponent,
+    canActivate: [authGuard],
+    loadChildren: () =>
+      import('./pages/dashboard-page/dashboard.routes')
   },
   {
     path: '**',

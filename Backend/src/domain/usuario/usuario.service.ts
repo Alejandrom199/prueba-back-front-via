@@ -12,8 +12,8 @@ export class UsuarioService {
         include: {
           sessions: true,
           roles: {
-            select: {
-              rolId: true
+            include: {
+              rol: true
             }
           }
         }
@@ -33,8 +33,8 @@ export class UsuarioService {
         include: {
           sessions: true,
           roles: {
-            select: {
-              rolId: true
+            include: {
+              rol: true
             }
           }
         }
@@ -101,35 +101,41 @@ export class UsuarioService {
   
 
   // Actualizar usuario y roles
-  async updateUsuario(userId: number, userData: any, rolesIds: number[]) {
+  async updateUsuario(userId: number, userData: any, rolesIds: number[] = []) {
     try {
-      // Primero, actualizamos la información del usuario
+
       const updatedUser = await prisma.usuario.update({
         where: { idUsuario: userId },
         data: userData,
       });
-
-      // Eliminar los roles antiguos del usuario
-      await prisma.usuarioRol.deleteMany({
-        where: {
-          usuarioId: userId
-        }
-      });
-
-      // Asignar los nuevos roles al usuario
-      for (const rolId of rolesIds) {
-        await prisma.usuarioRol.create({
-          data: {
+  
+      // Si se enviaron nuevos roles, actualizar la relación en UsuarioRol
+      if (rolesIds.length > 0) {
+        // Eliminar los roles anteriores del usuario
+        await prisma.usuarioRol.deleteMany({
+          where: { usuarioId: userId },
+        });
+  
+        // Agregar los nuevos roles en la tabla intermedia
+        await prisma.usuarioRol.createMany({
+          data: rolesIds.map(rolId => ({
             usuarioId: userId,
-            rolId: rolId
-          }
+            rolId: rolId,
+          })),
         });
       }
-
-      return updatedUser;
+  
+      // Retornar el usuario con sus roles actualizados
+      return await prisma.usuario.findUnique({
+        where: { idUsuario: userId },
+        include: { roles: { include: { rol: true } } }, // Incluir info de roles
+      });
     } catch (error) {
       console.error("Error al actualizar el usuario:", error);
-      throw new Error("Error al actualizar el usuario");
+      if(error instanceof Error){
+        throw new Error("Error al actualizar el usuario: " + error.message);
+      }
+      
     }
   }
   

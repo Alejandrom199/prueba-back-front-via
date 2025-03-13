@@ -1,23 +1,19 @@
-import {Component, inject, OnInit} from '@angular/core';
-import {UsuarioService} from '../../services/usuario.service';
-import {Usuario} from '../../interfaces/Usuario';
+import {Component, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
-import {DatePipe} from '@angular/common';
+import {UsuarioMostrar} from '../../interfaces/UsuarioMostrar';
 
 
 @Component({
   selector: 'app-bienvenida-page',
-  imports: [
-    DatePipe
-  ],
+  imports: [],
   templateUrl: './bienvenida-page.component.html',
   standalone: true,
-  styleUrl: './bienvenida-page.component.css'
 })
-export class BienvenidaPageComponent{
-  usuario?: Usuario
+export class BienvenidaPageComponent implements OnInit{
+  usuario?: UsuarioMostrar
 
   constructor(private router: Router) {
+
   }
 
   ngOnInit(): void {
