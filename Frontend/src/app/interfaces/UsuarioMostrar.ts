@@ -1,5 +1,4 @@
 import {Session} from './Session';
-import {Role} from './Role';
 import {UsuarioRole} from './UsuarioRole';
 
 export interface UsuarioMostrar {

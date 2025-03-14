@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 import { UsuarioService } from './usuario.service';
-import { SessionService } from '../session/session.service';
 
 export class UsuarioController {
   private usuarioService: UsuarioService;

@@ -66,13 +66,13 @@ export class UsuarioService {
     // Preparar el hash de la contraseña
     const hashedPassword = await bcrypt.hash(Password, 10);
   
-    // Insertar Persona y Usuario de forma transaccional (dependiendo de tus reglas)
+
     const nuevaPersona = await prisma.persona.create({
       data: {
         Nombres: persona.Nombres,
         Apellidos: persona.Apellidos,
         Identificacion: persona.Identificacion,
-        FechaNacimiento: new Date(persona.FechaNacimiento) // Asegúrate de que la fecha es válida
+        FechaNacimiento: new Date(persona.FechaNacimiento) 
       }
     });
   
@@ -103,20 +103,19 @@ export class UsuarioService {
   // Actualizar usuario y roles
   async updateUsuario(userId: number, userData: any, rolesIds: number[] = []) {
     try {
-
-      const updatedUser = await prisma.usuario.update({
+  
+      await prisma.usuario.update({
         where: { idUsuario: userId },
         data: userData,
       });
   
-      // Si se enviaron nuevos roles, actualizar la relación en UsuarioRol
       if (rolesIds.length > 0) {
-        // Eliminar los roles anteriores del usuario
+        // Eliminar roles anteriores
         await prisma.usuarioRol.deleteMany({
           where: { usuarioId: userId },
         });
   
-        // Agregar los nuevos roles en la tabla intermedia
+        // Agregar nuevos roles
         await prisma.usuarioRol.createMany({
           data: rolesIds.map(rolId => ({
             usuarioId: userId,
@@ -125,19 +124,25 @@ export class UsuarioService {
         });
       }
   
-      // Retornar el usuario con sus roles actualizados
       return await prisma.usuario.findUnique({
         where: { idUsuario: userId },
-        include: { roles: { include: { rol: true } } }, // Incluir info de roles
+        include: {
+          roles: {
+            include: {
+              rol: true,
+            },
+          },
+        },
       });
     } catch (error) {
-      console.error("Error al actualizar el usuario:", error);
-      if(error instanceof Error){
-        throw new Error("Error al actualizar el usuario: " + error.message);
+      console.error('Error al actualizar el usuario:', error);
+      if (error instanceof Error) {
+        throw new Error('Error al actualizar el usuario: ' + error.message);
       }
-      
+      throw error;
     }
   }
+  
   
 
   async deleteUsuario(id: number) {
@@ -167,7 +172,62 @@ export class UsuarioService {
       throw new Error('Error al obtener usuario con sesión: ' + error);
     }
   }
-  
 
+  async  crearUsuarioAdmin() {
+    // Primero, verificar si el rol "administrador" ya existe
+    let rolAdmin = await prisma.rol.findUnique({
+      where: {
+        idRol: 1
+      },
+    });
   
+    // Si el rol no existe, crearlo
+    if (!rolAdmin) {
+      rolAdmin = await prisma.rol.create({
+        data: {
+          RolName: 'administrador',
+        },
+      });
+    }
+  
+    // Verificar si ya existe un usuario con el rol 'administrador'
+    const usuarioAdmin = await prisma.usuario.findFirst({
+      where: {
+        roles: {
+          some: {
+            rolId: rolAdmin.idRol, // Usar el idRol del rol administrador
+          },
+        },
+      },
+      include: {
+        roles: true, // Incluir roles para verificar
+      },
+    });
+  
+    if (!usuarioAdmin) {
+      // Si no existe el usuario administrador, crear el nuevo usuario
+      const hashedPassword = await bcrypt.hash('@dmin1', 10);  // Cifrar la contraseña
+  
+      const nuevoUsuario = await prisma.usuario.create({
+        data: {
+          UserName: 'admin',
+          Password: hashedPassword, // Usa la contraseña cifrada
+          Mail: 'admin@admin.com',
+          SessionActive: 'S',
+          Status: 'active',
+          failedAttempts: 0,
+          Persona_idPersona2: 5,
+          roles: {
+            create: {
+              rolId: rolAdmin.idRol, 
+            },
+          },
+        },
+      });
+  
+      console.log('Usuario administrador creado:', nuevoUsuario);
+    } else {
+      console.log('El usuario administrador ya existe');
+    }
+  }
 }

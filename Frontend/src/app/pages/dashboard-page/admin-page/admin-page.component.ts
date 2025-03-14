@@ -7,7 +7,6 @@ import {UsuarioMostrar} from '../../../interfaces/UsuarioMostrar';
   imports: [],
   templateUrl: './admin-page.component.html',
   standalone: true,
-  styleUrl: './admin-page.component.css'
 })
 export class AdminPageComponent implements OnInit{
 
@@ -21,12 +20,18 @@ export class AdminPageComponent implements OnInit{
   constructor(private usuarioService: UsuarioService) {}
 
   ngOnInit(): void {
-    this.usuarioService.obtenerUsuarios().subscribe(data => {
-      this.usuarios = data
-    })
-
-    this.calcularEstadisticas()
+    this.usuarioService.obtenerUsuarios().subscribe({
+      next: (data) => {
+        this.usuarios = data;
+        console.log("Usuarios recibidos:", this.usuarios);
+        this.calcularEstadisticas();
+      },
+      error: (err) => {
+        console.error("Error al obtener usuarios", err);
+      }
+    });
   }
+
 
   calcularEstadisticas(): void {
     if (!this.usuarios) return;
